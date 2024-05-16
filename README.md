@@ -1,1 +1,1 @@
-# thesis-saas-frontend
+# Bachelor thesis technical part (FRONTEND)
