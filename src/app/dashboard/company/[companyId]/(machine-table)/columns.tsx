@@ -38,7 +38,11 @@ export const columns: ColumnDef<Machine>[] = [
     header: "Machine Status",
     cell: ({ row }) => {
       const s = row.original;
-      return <Badge variant="success">{s.status}</Badge>;
+      return (
+        <Badge variant={s.status === "Issue" ? "destructive" : "success"}>
+          {s.status}
+        </Badge>
+      );
     },
   },
   {

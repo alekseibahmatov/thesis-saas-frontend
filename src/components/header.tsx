@@ -14,6 +14,7 @@ import {
 import useActivePath from "~/hooks/useActivePath";
 import { useUserRole } from "~/hooks/useUserRole";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 export const Header = () => {
   const activePath = useActivePath();
@@ -48,14 +49,22 @@ export const Header = () => {
         link: "/dashboard/workers",
       },
       {
-        label: "Voice pools",
-        link: "/dashboard/voice-pools",
+        label: "Working hours",
+        link: "/dashboard/working-hours",
       },
+      {
+        label: "Voice channels",
+        link: "/dashboard/voice-channels",
+      },
+      // {
+      //   label: "Settings",
+      //   link: "/dashboard/settings",
+      // },
     ],
   };
 
   return (
-    <header className="bg-background sticky top-0 flex h-16 items-center gap-4 border-b px-4 md:px-6">
+    <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
       <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
         <Link
           href="#"
@@ -69,7 +78,7 @@ export const Header = () => {
             <Link
               href={link}
               key={label}
-              className={`${usePathname() === link ? "text-foreground" : "text-muted-foreground"} hover:text-foreground text-nowrap transition-colors`}
+              className={`${usePathname() === link ? "text-foreground" : "text-muted-foreground"} text-nowrap transition-colors hover:text-foreground`}
             >
               {label}
             </Link>
@@ -96,7 +105,7 @@ export const Header = () => {
                 <Link
                   href={link}
                   key={label}
-                  className={`${activePath === link ? "" : "text-muted-foreground"} hover:text-foreground text-nowrap`}
+                  className={`${activePath === link ? "" : "text-muted-foreground"} text-nowrap hover:text-foreground`}
                 >
                   {label}
                 </Link>
@@ -115,7 +124,13 @@ export const Header = () => {
           <DropdownMenuContent align="end">
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Logout</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                void signOut();
+              }}
+            >
+              Logout
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

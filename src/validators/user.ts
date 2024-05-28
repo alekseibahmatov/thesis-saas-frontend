@@ -20,3 +20,11 @@ export const userGetFilterSchema = z.object({
   companyId: z.string().optional(),
   userRole: z.enum(Object.values(UserRole) as [UserRole, ...UserRole[]]),
 });
+
+export const userEditSchema = userCreateSchema.extend({
+  id: z.string(),
+  role: z.enum(Object.values(UserRole) as [UserRole, ...UserRole[]]).optional(),
+  password: z.string().optional(),
+});
+
+export type userEditSchemaType = z.infer<typeof userEditSchema>;

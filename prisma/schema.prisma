@@ -21,8 +21,10 @@ model User {
   role     UserRole @default(WORKER)
 
   // Other fields and relations
-  dataPools    DataPool[]
-  currentAlert Alert?
+  workingHours WorkingHour[]
+  alerts       Alert[]
+
+  voiceChannels VoiceChannel[]
 
   reprCompanyId   String?
   workerCompanyId String?
@@ -42,12 +44,15 @@ model Company {
 
   machines Machine[]
 
-  dataPools DataPool[]
-
   representative User   @relation("representative", fields: [representativeId], references: [id])
   workers        User[] @relation("workers")
 
+  workingHours  WorkingHour[]
+  voiceChannels VoiceChannel[]
+
   representativeId String @unique
+
+  factoryPlan Bytes?
 
   @@map("company")
 }
@@ -63,23 +68,27 @@ model Machine {
   company   Company @relation(fields: [companyId], references: [id])
   companyId String
 
-  currentAlert Alert?
+  positionX Int?
+  positionY Int?
+
+  alerts Alert[]
 
   @@map("machines")
 }
 
-model DataPool {
+model VoiceChannel {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users        User[]
-  workingHours WorkingHour[]
+  name String
+
+  users User[]
 
   company   Company @relation(fields: [companyId], references: [id])
   companyId String
 
-  @@map("data_pools")
+  @@map("voice_channels")
 }
 
 model WorkingHour {
@@ -87,12 +96,16 @@ model WorkingHour {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  dayOfWeek Int      @unique
-  from      DateTime
-  to        DateTime
+  name String
 
-  dataPool   DataPool @relation(fields: [dataPoolId], references: [id])
-  dataPoolId String
+  dayOfWeek DayOfWeek
+  from      String
+  until     String
+
+  users User[]
+
+  company   Company @relation(fields: [companyId], references: [id])
+  companyId String
 
   @@map("working_hours")
 }
@@ -103,14 +116,14 @@ model Alert {
   updatedAt DateTime @updatedAt
 
   name               String
-  avgMaintenanceTime Int
-  currentStatus      Int // TODO change to some enum
+  avgMaintenanceTime Int?
+  currentStatus      AlertStatus // TODO change to some enum
 
-  responsibleUser   User   @relation(fields: [responsibleUserId], references: [id])
-  responsibleUserId String @unique
+  responsibleUser   User?   @relation(fields: [responsibleUserId], references: [id])
+  responsibleUserId String?
 
   machine   Machine @relation(fields: [machineId], references: [id])
-  machineId String  @unique
+  machineId String
 
   @@map("alerts")
 }
@@ -122,5 +135,23 @@ enum UserRole {
 }
 
 enum MachineStatus {
-  CREATED
+  PENDING_CONNECTION
+  WORKING
+  ALERT
+}
+
+enum AlertStatus {
+  PENDING
+  TAKEN
+  SOLVED
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
 }

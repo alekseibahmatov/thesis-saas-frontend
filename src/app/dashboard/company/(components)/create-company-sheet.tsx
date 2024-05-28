@@ -24,7 +24,7 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { type SubmitHandler, useForm } from "react-hook-form";
 import type { companyCreateSchemaType } from "~/validators/company";
 import { companyCreateSchema } from "~/validators/company";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -148,7 +148,6 @@ export const CreateCompanySheet = () => {
                               {!!managers &&
                                 managers.map(({ id, fullName, email }) => (
                                   <CommandItem
-                                    //@ts-expect-error fullName is always exists
                                     value={fullName}
                                     key={id}
                                     onSelect={() => {

@@ -24,3 +24,11 @@ export const companyEditSchema = z.object({
 });
 
 export type companyEditSchemaType = z.infer<typeof companyEditSchema>;
+
+export const companyAddFactoryPlanScheme = z.object({
+  image: z.string(),
+});
+
+export const companyGetFactoryPlanScheme = z.object({
+  id: z.string(),
+});

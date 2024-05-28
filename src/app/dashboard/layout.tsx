@@ -1,12 +1,16 @@
 import { TRPCReactProvider } from "~/trpc/react";
 import { Header } from "~/components/header";
 import { Toaster } from "~/components/ui/toaster";
+import {pathGuard} from "~/utils/utils";
+import {UserRole} from "@prisma/client";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+    await pathGuard([UserRole.ADMIN, UserRole.MANAGER]);
+
   return (
     <TRPCReactProvider>
       <div className="flex min-h-screen w-full flex-col">

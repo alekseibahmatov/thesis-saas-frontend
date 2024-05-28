@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const machinesGetAllScheme = z.object({
-  companyId: z.string(),
+  companyId: z.string().optional(),
 });
 
 export const machineCreateScheme = z.object({
@@ -33,4 +33,10 @@ export type machineEditSchemeType = z.infer<typeof machineEditScheme>;
 
 export const machineRemoveScheme = z.object({
   machineId: z.string(),
+});
+
+export const machineMoveScheme = z.object({
+  id: z.string(),
+  positionX: z.number(),
+  positionY: z.number(),
 });

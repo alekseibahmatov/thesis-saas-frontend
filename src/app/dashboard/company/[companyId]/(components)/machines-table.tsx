@@ -5,7 +5,7 @@ import { CustomTable } from "~/components/custom-table";
 import { columns } from "~/app/dashboard/company/[companyId]/(machine-table)/columns";
 
 interface PageProps {
-  companyId: string;
+  companyId?: string;
 }
 
 export const MachinesTable: FC<PageProps> = ({ companyId }) => {

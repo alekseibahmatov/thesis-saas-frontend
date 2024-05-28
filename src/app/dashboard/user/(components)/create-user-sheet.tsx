@@ -10,7 +10,8 @@ import {
 } from "~/components/ui/sheet";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { SubmitHandler, useForm } from "react-hook-form";
+import type { SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -19,7 +20,8 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
-import { userCreateSchema, userCreateSchemaType } from "~/validators/user";
+import type { userCreateSchemaType } from "~/validators/user";
+import { userCreateSchema } from "~/validators/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Select,
@@ -32,14 +34,16 @@ import { UserRole } from "@prisma/client";
 import { api } from "~/trpc/react";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { ExclamationTriangleIcon, ReloadIcon } from "@radix-ui/react-icons";
-import { FC, useEffect, useState } from "react";
+import type { FC } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface PageProps {
   companyId?: string;
+  showRole?: boolean;
 }
 
-export const CreateUserSheet: FC<PageProps> = ({ companyId }) => {
+export const CreateUserSheet: FC<PageProps> = ({ companyId, showRole }) => {
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -48,10 +52,12 @@ export const CreateUserSheet: FC<PageProps> = ({ companyId }) => {
     resolver: zodResolver(userCreateSchema),
   });
 
+  const isRoleAllowed = useMemo(() => showRole, [showRole]);
+
   useEffect(() => {
-    if (!companyId) return;
+    if (isRoleAllowed) return;
     form.setValue("role", UserRole.WORKER);
-  }, [form, companyId]);
+  }, [form, isRoleAllowed]);
 
   const mutation = api.userRouter.createUser.useMutation({
     onError: (err) => {
@@ -61,7 +67,11 @@ export const CreateUserSheet: FC<PageProps> = ({ companyId }) => {
       setSheetOpen(false);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-expect-error
-      void queryClient.invalidateQueries(["userRouter", "getAll"]);
+      void queryClient.invalidateQueries([
+        "userRouter",
+        "getAll",
+        "getUsersFilter",
+      ]);
       form.reset();
     },
   });
@@ -77,12 +87,12 @@ export const CreateUserSheet: FC<PageProps> = ({ companyId }) => {
     <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
       <SheetTrigger>
         <Button type="button" variant="outline">
-          Add new {companyId ? "worker" : "user"}
+          Add new {!isRoleAllowed ? "worker" : "user"}
         </Button>
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>Add new {companyId ? "worker" : "user"}</SheetTitle>
+          <SheetTitle>Add new {!isRoleAllowed ? "worker" : "user"}</SheetTitle>
           <SheetDescription>Add new user to a system</SheetDescription>
         </SheetHeader>
 
@@ -123,7 +133,7 @@ export const CreateUserSheet: FC<PageProps> = ({ companyId }) => {
                   </FormItem>
                 )}
               />
-              {!companyId && (
+              {isRoleAllowed && (
                 <FormField
                   name="role"
                   control={form.control}

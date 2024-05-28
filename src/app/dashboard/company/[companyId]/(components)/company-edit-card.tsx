@@ -201,7 +201,7 @@ export const CompanyEditCard: FC<PageProps> = ({ companyId }) => {
       <CardFooter>
         <div className="flex flex-row flex-wrap gap-3">
           <CreateMachineSheet companyId={companyId} />
-          <CreateUserSheet companyId={companyId} />
+          <CreateUserSheet companyId={companyId} showRole={false} />
         </div>
       </CardFooter>
     </Card>

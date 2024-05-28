@@ -1,12 +1,15 @@
 import { UserRole } from "@prisma/client";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import {
+  companyAddFactoryPlanScheme,
   companyCreateSchema,
   companyDataSchema,
   companyEditSchema,
+  companyGetFactoryPlanScheme,
   companyRemoveSchema,
 } from "~/validators/company";
 import { TRPCError } from "@trpc/server";
+import { db } from "~/server/db";
 
 export const companyRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -103,4 +106,24 @@ export const companyRouter = createTRPCRouter({
         },
       });
     }),
+  isFactoryPlan: protectedProcedure.query(async ({ ctx }) => {
+    if (ctx.session.user.role !== UserRole.MANAGER)
+      return { isFactoryPlan: false };
+
+    const company = await ctx.db.company.findUnique({
+      where: {
+        representativeId: ctx.session.user.id,
+      },
+    });
+
+    if (!company) return { isFactoryPlan: false };
+
+    const factoryPlan = company.factoryPlan;
+
+    if (!factoryPlan) {
+      return { isFactoryPlan: false };
+    }
+
+    return { isFactoryPlan: true };
+  }),
 });

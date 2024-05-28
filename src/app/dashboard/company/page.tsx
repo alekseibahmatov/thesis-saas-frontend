@@ -6,13 +6,17 @@ import { CreateCompanySheet } from "~/app/dashboard/company/(components)/create-
 import { api } from "~/trpc/react";
 import { pathGuard } from "~/utils/utils";
 import { UserRole } from "@prisma/client";
+import {useSession} from "next-auth/react";
 
 export default function Companies() {
   const { data, isLoading } = api.companyRouter.getAll.useQuery();
+  const session = useSession();
 
   if (isLoading) {
     return "Loading...";
   }
+
+  console.log(session)
 
   return (
     <>

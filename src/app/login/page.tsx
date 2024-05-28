@@ -1,9 +1,12 @@
 "use client";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { Button, TextInputField } from "evergreen-ui";
-import { signIn } from "next-auth/react";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {SubmitHandler, useForm} from "react-hook-form";
+import {signIn} from "next-auth/react";
+import {z} from "zod";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {Card, CardContent, CardHeader, CardTitle} from "~/components/ui/card";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "~/components/ui/form";
+import {Input} from "~/components/ui/input";
+import {Button} from "~/components/ui/button";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -13,44 +16,48 @@ const loginSchema = z.object({
 type loginSchemaType = z.infer<typeof loginSchema>;
 
 export default function Page() {
-  const {
-    register,
-    formState: { errors },
-    handleSubmit,
-  } = useForm<loginSchemaType>({ resolver: zodResolver(loginSchema) });
+  const form = useForm<loginSchemaType>({ resolver: zodResolver(loginSchema) });
 
   const login: SubmitHandler<loginSchemaType> = ({ email, password }) => {
-    signIn("credentials", {
+    void signIn("credentials", {
       email,
       password,
       callbackUrl: "/dashboard",
     });
   };
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-slate-100 p-24">
-      <h1>Login to SaaS</h1>
-      <form onSubmit={handleSubmit(login)}>
-        <div className="flex flex-col border border-gray-200 p-4">
-          <TextInputField
-            label="Email"
-            type="text"
-            placeholder="johndoe@saas.com"
-            {...register("email")}
-            required
-          />
-          <TextInputField
-            label="Password"
-            type="password"
-            placeholder="******"
-            {...register("password")}
-            required
-          />
-
-          <Button type="submit" intent="primary">
-            Login
-          </Button>
-        </div>
-      </form>
+      <Card className="w-[400px]">
+          <CardHeader>
+              <CardTitle>Login to SaaS</CardTitle>
+          </CardHeader>
+        <CardContent>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(login)} className="space-y-8">
+                    <FormField control={form.control} name="email" render={({field}) => (
+                        <FormItem>
+                            <FormLabel>Email</FormLabel>
+                            <FormControl>
+                                <Input placeholder="admin@saas.com" {...field} />
+                            </FormControl>
+                            <FormMessage/>
+                        </FormItem>
+                    )}/>
+                    <FormField control={form.control} name="password" render={({field}) => (
+                        <FormItem>
+                            <FormLabel>Password</FormLabel>
+                            <FormControl>
+                                <Input type="password" {...field} />
+                            </FormControl>
+                            <FormMessage/>
+                        </FormItem>
+                    )} />
+                    <Button type="submit">Login</Button>
+                </form>
+            </Form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

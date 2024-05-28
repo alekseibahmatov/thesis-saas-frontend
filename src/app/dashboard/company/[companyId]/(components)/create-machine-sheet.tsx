@@ -1,35 +1,19 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { FC, useState } from "react";
-import { api } from "~/trpc/react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "~/components/ui/sheet";
-import { Button } from "~/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "~/components/ui/form";
-import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
-import { ExclamationTriangleIcon, ReloadIcon } from "@radix-ui/react-icons";
-import { Input } from "~/components/ui/input";
-import {
-  machineCreateScheme,
-  machineCreateSchemeType,
-} from "~/validators/machine";
+'use client'
+import {useQueryClient} from "@tanstack/react-query";
+import {FC, useState} from "react";
+import {api} from "~/trpc/react";
+import {SubmitHandler, useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger,} from "~/components/ui/sheet";
+import {Button} from "~/components/ui/button";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage,} from "~/components/ui/form";
+import {Alert, AlertDescription, AlertTitle} from "~/components/ui/alert";
+import {ExclamationTriangleIcon, ReloadIcon} from "@radix-ui/react-icons";
+import {Input} from "~/components/ui/input";
+import {machineCreateScheme, machineCreateSchemeType,} from "~/validators/machine";
 
 interface PageProps {
-  companyId: string;
+  companyId?: string;
 }
 
 export const CreateMachineSheet: FC<PageProps> = ({ companyId }) => {
